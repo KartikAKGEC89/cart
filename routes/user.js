@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { verifyToken, verifyTokenAndAuthorization } = require('./verifyToken');
+const { verifyTokenAndAuthorization, verifyTokenAndAdmin } = require('./verifyToken');
 const User = require('../models/User');
 
 router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
@@ -19,6 +19,37 @@ router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
     }
 
 })
+
+router.delete('/:id', verifyTokenAndAuthorization, async (req, res) => {
+
+    
+    try {
+        await User.findByIdAndDelete(req.params.id)
+        res.status(200).json("deleteduser");
+    } catch (error) {
+        console.log(error)
+        res.status(404).json(error);
+    }
+
+});
+
+
+// Not authorized **************************************************
+
+
+router.get('/find', verifyTokenAndAdmin, async (req, res) => {
+
+    
+    try {
+        const user = await User.find(req.body);
+        console.log(error);
+        res.status(200).json({ user });
+    } catch (error) {
+        console.log(error)
+        res.status(404).json(error);
+    }
+
+});
 
 
 module.exports = router;
